@@ -41,8 +41,8 @@ def reads_replace(bam_file, total_chosen_reads, seqer, flow_order, lib_key, barc
     # write edited reads into edit.bam
     edit_bam_file = os.path.join(out_dir, "edit.bam")
     edit_bam = pysam.AlignmentFile(edit_bam_file, 'wb', template=bam)
-    for read_name, readInfo in edit_bam_reads.items():
-        for strand, read in readInfo.items():
+    for read_name, readInfo in list(edit_bam_reads.items()):
+        for strand, read in list(readInfo.items()):
             edit_bam.write(read)
     edit_bam.close()
 

@@ -113,7 +113,7 @@ def merge_edit_bam(bam_file, out_dir, is_single, total_modify_reads_file, total_
                 orig_read2 = used_reads[read2_name]
                 new_read1 = copy.deepcopy(orig_read1)
                 new_read2 = copy.deepcopy(orig_read2)
-                print read1_name
+                print(read1_name)
                 new_read1.query_sequence = modify_reads_seq[read1_name]
                 new_read1.query_qualities = modify_reads_quan[read1_name]
                 new_read2.query_sequence = modify_reads_seq[read2_name]

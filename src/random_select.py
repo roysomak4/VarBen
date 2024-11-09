@@ -8,7 +8,7 @@ def choose(fileName, chooseNum, outFile):
         lineList = fin.readlines()
 
     fin.close()
-    print len(lineList), type(lineList)
+    print(len(lineList), type(lineList))
     randomLines = random.sample(lineList, chooseNum)
     with open(outFile, 'w') as fout:
         for line in randomLines:
@@ -19,7 +19,7 @@ if len(sys.argv) == 4:
     fileName = sys.argv[1]
     chooseNum = int(sys.argv[2])
     outFile = sys.argv[3]
-    print fileName, chooseNum, outFile
+    print(fileName, chooseNum, outFile)
     choose(fileName, chooseNum, outFile)
 else:
     sys.exit("usage: %s <filename> <Choose number> <output filename with path> " % sys.argv[0])

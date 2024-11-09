@@ -25,12 +25,12 @@ def main(run_args):
     invalid_log = InvalidLog(invalid_log_file)
 
     # step1: deal with mutfile and get haplotypes
-    print "step1: deal with mutfile and get haplotypes"
+    print("step1: deal with mutfile and get haplotypes")
     haplotype_list = get_haplotypes(run_args.bamfile, run_args.reffasta, run_args.mutfile, int(run_args.haplosize),
                                     float(run_args.snpfrac), invalid_log)
 
     # step2: deal haplotypes and get total_chosen_reads, total_chosen_reads_muts
-    print "step2: deal haplotypes and get total_chosen_reads, total_chosen_reads_muts"
+    print("step2: deal haplotypes and get total_chosen_reads, total_chosen_reads_muts")
     success_list_file = os.path.join(run_args.outdir, 'success_list.txt')
     total_chosen_reads, total_chosen_reads_muts = deal_haplotype_multi(run_args.bamfile, haplotype_list,
                                                                        temp_out_dir, run_args.reffasta,
@@ -45,22 +45,22 @@ def main(run_args):
                                                                        success_list_file)
     invalid_log.close()
     if len(total_chosen_reads) == 0:
-        print "Warning: No reads to deal with of all these sv, checkout your sv file"
+        print("Warning: No reads to deal with of all these sv, checkout your sv file")
         return
 
     # step3: modify the reads in total_chosen_reads itself
-    print "step3: modify the reads in total_chosen_reads itself"
+    print("step3: modify the reads in total_chosen_reads itself")
     reads_modify(total_chosen_reads, total_chosen_reads_muts, run_args.reffasta, int(run_args.process))
 
     # step4: write edited reads to edited file and exclude reads to exclude file ,than remap edited file to reference
-    print "step4: write edited reads to edited file and exclude reads to exclude file ,than remap edited file to reference"
+    print("step4: write edited reads to edited file and exclude reads to exclude file ,than remap edited file to reference")
     edit_remap_bam_file, exclude_bam_file = reads_replace(run_args.bamfile, total_chosen_reads, run_args.seqer,
                                                           run_args.floworder, run_args.libkey, run_args.barcode,
                                                           run_args.tag, temp_out_dir, run_args.aligner,
                                                           run_args.alignerIndex, run_args.single)
 
     # step5: merge remap.edit.bam and exclude exclude.bam and sort
-    print "step5: merge remap.edit.bam and exclude exclude.bam and sort"
+    print("step5: merge remap.edit.bam and exclude exclude.bam and sort")
     # edit_remap_bam_file, exclude_bam_file = os.path.join(temp_out_dir, "edit.remap.sort.bam"), os.path.join(
     #     temp_out_dir, "exclude.bam")
     out_bam_file = os.path.join(run_args.outdir, "edit.sorted.bam")
@@ -68,8 +68,8 @@ def main(run_args):
     bamIndex(out_bam_file)
     end_time = time.asctime(time.localtime(time.time()))
     # speed_time = end_time - start_time
-    print "Edit Bam is completed! Result see %s and valid mutation see %s. Invalid mutation can't be spike in see %s." % (
-        out_bam_file, success_list_file, invalid_log_file)
+    print("Edit Bam is completed! Result see %s and valid mutation see %s. Invalid mutation can't be spike in see %s." % (
+        out_bam_file, success_list_file, invalid_log_file))
 
 
 def run():

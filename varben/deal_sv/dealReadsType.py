@@ -218,7 +218,7 @@ def mend_read_part(ref, read, start, end, readsType, relPart, svtype="del",
 
 def deal_type1(ref, reads_type1_left, reads_type1_right, freq, start, end, svtype, subPos=None):
     # fix up
-    print "deal type1 start......"
+    print("deal type1 start......")
     reads_left_num = len(reads_type1_left)
     reads_right_num = len(reads_type1_right)
     reads_left_mend_id = random_mendIDList(reads_left_num, freq)
@@ -243,12 +243,12 @@ def deal_type1(ref, reads_type1_left, reads_type1_right, freq, start, end, svtyp
         read.query_sequence = new_seq
         read.query_qualities = qual
         total_reads.append([read, read_mate])
-    print "deal type1 end......"
+    print("deal type1 end......")
     return total_reads
 
 
 def deal_type2(ref, reads_type2_left, reads_type2_right, freq, start, end, svtype, subPos=None):
-    print "deal type2 start......"
+    print("deal type2 start......")
     reads_left_num = len(reads_type2_left)
     reads_right_num = len(reads_type2_right)
     reads_left_mend_id = random_mendIDList(reads_left_num, freq)
@@ -345,17 +345,17 @@ def deal_type2(ref, reads_type2_left, reads_type2_right, freq, start, end, svtyp
             read.query_qualities = qual
             read2 = read_pair[1]
             total_reads.append([read, read2])
-    print "deal type2 end......"
+    print("deal type2 end......")
     return total_reads
 
 
 def deal_type3(reads_type3_left, reads_type3_right, freq, insertSize, start, end, svtype, supple1=None, supple2=None,
                subPos=None):
     # choose left read of start and right of end
-    print "deal type3 start......"
+    print("deal type3 start......")
     reads_left_num = len(reads_type3_left)
     reads_right_num = len(reads_type3_right)
-    print reads_left_num, reads_right_num
+    print(reads_left_num, reads_right_num)
     reads_left_mend_id = random_mendIDList(reads_left_num, freq)
     reads_right_mend_id = random_mendIDList(reads_right_num, freq)
     total_del_reads = []
@@ -363,7 +363,7 @@ def deal_type3(reads_type3_left, reads_type3_right, freq, insertSize, start, end
     total_modify_reads = []
     if svtype == "del":
         if len(supple1) == 0:
-            print "Step3: Warning! No corresponding reads to pair"
+            print("Step3: Warning! No corresponding reads to pair")
             return [], [], []
         for read_pair_id in reads_left_mend_id:
             read_pair = reads_type3_left[read_pair_id]
@@ -382,16 +382,16 @@ def deal_type3(reads_type3_left, reads_type3_right, freq, insertSize, start, end
                         [read.reference_name, str(read.reference_start), str(read.reference_end), str(read.is_read1)])
                     y = "\t".join([new_read.reference_name, str(new_read.reference_start), str(new_read.reference_end),
                                    str(new_read.is_read1)])
-                    print(x + "; " + y)
+                    print((x + "; " + y))
                     break
                 try_time += 1
                 if try_time > try_max_time:
-                    print "can't find a mate read to match!"
+                    print("can't find a mate read to match!")
                     break
 
     if svtype == "dup":
         if len(supple1) == 0:
-            print "Step3: Warning! No corresponding reads to pair"
+            print("Step3: Warning! No corresponding reads to pair")
             return [], [], []
         for read_pair_id in reads_left_mend_id:
             read_pair = reads_type3_left[read_pair_id]
@@ -411,7 +411,7 @@ def deal_type3(reads_type3_left, reads_type3_right, freq, insertSize, start, end
                     break
                 try_time += 1
                 if try_time > try_max_time:
-                    print "can't find a mate read to match!"
+                    print("can't find a mate read to match!")
                     break
 
     elif svtype == "inv":
@@ -420,7 +420,7 @@ def deal_type3(reads_type3_left, reads_type3_right, freq, insertSize, start, end
         #    return [], [], []
         # print 'inv', len(reads_left_mend_id)
         if len(reads_type3_left) == 0 or len(reads_type3_right) == 0:
-            print "Step3: Warning! No corresponding reads to pair"
+            print("Step3: Warning! No corresponding reads to pair")
             return [], [], []
         for read_pair_id in reads_left_mend_id:
             read_pair = reads_type3_left[read_pair_id]
@@ -447,11 +447,11 @@ def deal_type3(reads_type3_left, reads_type3_right, freq, insertSize, start, end
                         [read.reference_name, str(read.reference_start), str(read.reference_end), str(read.is_read1)])
                     y = "\t".join([new_read.reference_name, str(new_read.reference_start), str(new_read.reference_end),
                                    str(new_read.is_read1)])
-                    print(x + "; " + y)
+                    print((x + "; " + y))
                     break
                 try_time += 1
                 if try_time > try_max_time:
-                    print "can't find a mate read to match!"
+                    print("can't find a mate read to match!")
                     break
 
         for read_pair_id in reads_right_mend_id:
@@ -477,7 +477,7 @@ def deal_type3(reads_type3_left, reads_type3_right, freq, insertSize, start, end
                     break
                 try_time += 1
                 if try_time > try_max_time:
-                    print "can't find a mate read to match!"
+                    print("can't find a mate read to match!")
                     break
 
     elif svtype == "trans_balance":
@@ -485,7 +485,7 @@ def deal_type3(reads_type3_left, reads_type3_right, freq, insertSize, start, end
         res = re.match("(\w*):(\d*)-(\d*)", subPos)
         trans_chr, trans_start, trans_end = res.group(1), int(res.group(2)), int(res.group(3))
         if len(reads_left_sub) == 0 or len(reads_right_sub) == 0:
-            print "Step3: Warning! No corresponding reads to pair"
+            print("Step3: Warning! No corresponding reads to pair")
             return [], [], []
         for read_pair_id in reads_left_mend_id:
             read_pair = reads_type3_left[read_pair_id]
@@ -502,7 +502,7 @@ def deal_type3(reads_type3_left, reads_type3_right, freq, insertSize, start, end
                     break
                 try_time += 1
                 if try_time > try_max_time:
-                    print "can't find a mate read to match!"
+                    print("can't find a mate read to match!")
                     break
 
         for read_pair_id in reads_right_mend_id:
@@ -520,14 +520,14 @@ def deal_type3(reads_type3_left, reads_type3_right, freq, insertSize, start, end
                     break
                 try_time += 1
                 if try_time > try_max_time:
-                    print "can't find a mate read to match!"
+                    print("can't find a mate read to match!")
                     break
     elif svtype == "trans_chrom":
         reads_left_sub, reads_right_sub = supple1, supple2
         res = re.match("(\w*):(\d*)-(\d*)", subPos)
         trans_chr, trans_start, trans_end = res.group(1), int(res.group(2)), int(res.group(3))
         if len(reads_left_sub) == 0:
-            print "Step3: Warning! No corresponding reads to pair"
+            print("Step3: Warning! No corresponding reads to pair")
             return [], [], []
         for read_pair_id in reads_left_mend_id:
             read_pair = reads_type3_left[read_pair_id]
@@ -545,18 +545,18 @@ def deal_type3(reads_type3_left, reads_type3_right, freq, insertSize, start, end
                         [read.reference_name, str(read.reference_start), str(read.reference_end), str(read.is_read1)])
                     y = "\t".join([new_read.reference_name, str(new_read.reference_start), str(new_read.reference_end),
                                    str(new_read.is_read1)])
-                    print(x + "; " + y)
+                    print((x + "; " + y))
                     break
                 try_time += 1
                 if try_time > try_max_time:
-                    print "can't find a mate read to match!"
+                    print("can't find a mate read to match!")
                     break
     elif svtype == "trans_unbalance":
         reads_left_sub, reads_right_sub = supple1, supple2
         res = re.match("(\w*):(\d*)-(\d*)", subPos)
         trans_chr, trans_start, trans_end = res.group(1), int(res.group(2)), int(res.group(3))
         if len(reads_left_sub) == 0 or len(reads_right_sub) == 0:
-            print "Step3: Warning! No corresponding reads to pair"
+            print("Step3: Warning! No corresponding reads to pair")
             return [], [], []
         for read_pair_id in reads_left_mend_id:
             read_pair = reads_type3_left[read_pair_id]
@@ -574,7 +574,7 @@ def deal_type3(reads_type3_left, reads_type3_right, freq, insertSize, start, end
                     break
                 try_time += 1
                 if try_time > try_max_time:
-                    print "can't find a mate read to match!"
+                    print("can't find a mate read to match!")
                     break
 
         for read_pair_id in reads_right_mend_id:  # use left again, because right is none
@@ -592,14 +592,14 @@ def deal_type3(reads_type3_left, reads_type3_right, freq, insertSize, start, end
                     break
                 try_time += 1
                 if try_time > try_max_time:
-                    print "can't find a mate read to match!"
+                    print("can't find a mate read to match!")
                     break
-    print "deal type3 end......"
+    print("deal type3 end......")
     return total_modify_reads, total_add_reads, total_del_reads
 
 
 def deal_type4(reads_type4, freq, svtype, insertSize=None, cnvType=None):
-    print "deal type4 start......"
+    print("deal type4 start......")
     reads_num = len(reads_type4)
     reads_mend_id = random_mendIDList(reads_num, freq)
     total_reads = []
@@ -615,7 +615,7 @@ def deal_type4(reads_type4, freq, svtype, insertSize=None, cnvType=None):
 
     elif svtype == "dup" or (svtype == "cnv" and cnvType == "gain") or svtype == "trans_unbalance":
         reads_mend_left_id = random_mendIDList(reads_num / 2, freq)
-        print "left mend count", len(reads_mend_left_id)
+        print("left mend count", len(reads_mend_left_id))
         for read_pair_id in reads_mend_left_id:
             # print read_pair_id
             read_pair = reads_type4[read_pair_id]
@@ -634,12 +634,12 @@ def deal_type4(reads_type4, freq, svtype, insertSize=None, cnvType=None):
                     break
                 try_time += 1
                 if try_time > try_max_time:
-                    print "can't find a mate read to match!"
+                    print("can't find a mate read to match!")
                     break
                     # print "out loop1"
 
         reads_mend_right_id = [reads_num / 2 + i for i in random_mendIDList(reads_num - reads_num / 2, freq)]
-        print "right mend count", len(reads_mend_right_id)
+        print("right mend count", len(reads_mend_right_id))
         for read_pair_id in reads_mend_right_id:
             # print read_pair_id
             read_pair = reads_type4[read_pair_id]
@@ -657,15 +657,15 @@ def deal_type4(reads_type4, freq, svtype, insertSize=None, cnvType=None):
                     break
                 try_time += 1
                 if try_time > try_max_time:
-                    print "can't find a mate read to match!"
+                    print("can't find a mate read to match!")
                     break
-    print "deal type4 end......"
+    print("deal type4 end......")
     return total_reads
 
 
 def deal_type5(ref, reads_type5_left, reads_type5_right, freq, start, end, svtype, supple1=None, supple2=None,
                subPos=None):
-    print "deal type5 start......"
+    print("deal type5 start......")
     reads_left_num = len(reads_type5_left)
     reads_right_num = len(reads_type5_right)
 
@@ -729,7 +729,7 @@ def deal_type5(ref, reads_type5_left, reads_type5_right, freq, start, end, svtyp
             read_right.query_qualities = qual_right
             total_reads.append([read_left, read_right])
 
-    print "deal type5 end......"
+    print("deal type5 end......")
 
     return total_reads
 
@@ -738,20 +738,20 @@ def random_mendIDList(totalReadsNum, frac):
     if totalReadsNum == 0:
         return []
     if frac <= 1:
-        mendList = random.sample(range(totalReadsNum), int(totalReadsNum * frac))
+        mendList = random.sample(list(range(totalReadsNum)), int(totalReadsNum * frac))
         return mendList
     elif frac > 1:
         cnt = int(frac)
         frac_sub = frac / (cnt + 1)
         total_mendList = []
         for i in range(cnt + 1):
-            mendList = random.sample(range(totalReadsNum), int(totalReadsNum * frac_sub))
+            mendList = random.sample(list(range(totalReadsNum)), int(totalReadsNum * frac_sub))
             total_mendList.extend(mendList)
         return total_mendList
 
 
 def deal_type6(ref, reads_type1_left, reads_type1_right, freq, start, end, svtype, subPos=None):
-    print "deal type6 start......"
+    print("deal type6 start......")
     reads_left_num = len(reads_type1_left)
     reads_right_num = len(reads_type1_right)
     reads_left_mend_id = random_mendIDList(reads_left_num, freq)
@@ -797,12 +797,12 @@ def deal_type6(ref, reads_type1_left, reads_type1_right, freq, start, end, svtyp
             read.query_sequence = new_seq
             read.query_qualities = qual
         total_reads.append([read])
-    print "deal type6 end......"
+    print("deal type6 end......")
     return total_reads
 
 
 def deal_type7(reads_type4, freq, svtype):
-    print "deal type7 start......"
+    print("deal type7 start......")
     reads_num = len(reads_type4)
     reads_mend_id = random_mendIDList(reads_num, freq)
     total_reads = []

@@ -8,7 +8,7 @@ from uuid import uuid4
 
 
 if len(sys.argv) == 4:
-    print(len(sys.argv))
+    print((len(sys.argv)))
     assert sys.argv[1].endswith('.bam')
     inbamfn = sys.argv[1]
     outbamfn = sub('.bam$', '.renamereads.bam', inbamfn)
@@ -50,7 +50,7 @@ if len(sys.argv) == 4:
             w += 1
 
         if n % 1000000 == 0:
-            print "Processed", n, "reads:", p, "paired,", u, "unpaired,", w, "written,", m, "mates found."
+            print("Processed", n, "reads:", p, "paired,", u, "unpaired,", w, "written,", m, "mates found.")
 
     outbam.close()
     inbam.close()

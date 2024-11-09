@@ -21,7 +21,7 @@ def get_name_list(reads_file, chr):
 
 def write_bam_byChr(bamFile, chr, excludeBamFile, editBamFile, total_modify_reads_file, total_delete_reads_file,
                     total_add_reads_file):
-    print chr
+    print(chr)
     bam = pysam.AlignmentFile(bamFile, 'rb')
     excludeBam = pysam.AlignmentFile(excludeBamFile, 'wb', template=bam)
     editBam = pysam.AlignmentFile(editBamFile, 'wb', template=bam)
@@ -44,7 +44,7 @@ def write_bam_byChr(bamFile, chr, excludeBamFile, editBamFile, total_modify_read
         else:
             excludeBam.write(read)
     delete.close()
-    print "Total reads: ", m
+    print("Total reads: ", m)
     bam.close()
     excludeBam.close()
     editBam.close()

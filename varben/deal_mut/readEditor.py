@@ -7,7 +7,7 @@ def editRead(read, refFile, mutList):
     seq = read.query_sequence
     qual = read.query_qualities
     if qual is None:
-        print "Warning: " + str(read) + " quality is None. Continue!"
+        print("Warning: " + str(read) + " quality is None. Continue!")
         return False
     ref = pysam.FastaFile(refFile)
     seq_len = len(seq)
@@ -91,7 +91,7 @@ def editRead(read, refFile, mutList):
 def snvEdit(read, pos):
     posPairList = read.get_aligned_pairs
     if pos < read.reference_start or pos > read.reference_end:
-        print "Warning: SNV is out of this read!"
+        print("Warning: SNV is out of this read!")
         return False
 
     mutPosIndex = None
@@ -100,7 +100,7 @@ def snvEdit(read, pos):
             mutPosIndex = pair[0]
             break
     if mutPosIndex is None:
-        print "Warning: A deletion existed of this read: %s at pos %s, can't spike in snv" % (read.query_name, pos)
+        print("Warning: A deletion existed of this read: %s at pos %s, can't spike in snv" % (read.query_name, pos))
         return False
     return mutPosIndex
 
@@ -108,7 +108,7 @@ def snvEdit(read, pos):
 def insEdit(read, pos):
     posPairList = read.get_aligned_pairs
     if pos + 1 < read.reference_start or pos > read.reference_end:
-        print "Warning: ins is out of this read!"
+        print("Warning: ins is out of this read!")
         return False
     elif pos + 1 == read.reference_start:
         mutPosIndex = -1
@@ -118,7 +118,7 @@ def insEdit(read, pos):
             if pair[1] == pos:
                 mutPosIndex = pair[0]
         if mutPosIndex is None:
-            print "Warning: A deletion existed of this read: %s at pos %s, can't spike in ins" % (read.query_name, pos)
+            print("Warning: A deletion existed of this read: %s at pos %s, can't spike in ins" % (read.query_name, pos))
             return False
     return mutPosIndex
 
@@ -127,7 +127,7 @@ def delEdit(read, start, end):
     posPairList = read.get_aligned_pairs
     if (start < read.reference_start and end < read.reference_start) or (
             start > read.reference_end and end > read.reference_end):
-        print "Warning: del is out of this read!"
+        print("Warning: del is out of this read!")
         return False
 
     elif start < read.reference_start <= end:
@@ -147,8 +147,8 @@ def delEdit(read, start, end):
         if pair[1] > end:
             break
     if startPosIndex is None or endPosIndex is None:
-        print "Warning: A deletion existed of this read: %s at pos %s-%s, can't spike in del" % (
-        read.query_name, startPosIndex, endPosIndex)
+        print("Warning: A deletion existed of this read: %s at pos %s-%s, can't spike in del" % (
+        read.query_name, startPosIndex, endPosIndex))
         return False
 
     return (startPosIndex, endPosIndex)
@@ -158,7 +158,7 @@ def subEdit(read, start, end):
     posPairList = read.get_aligned_pairs
     if (start < read.reference_start and end < read.reference_start) or (
             start > read.reference_end and end > read.reference_end):
-        print "Warning: sub is out of this read!"
+        print("Warning: sub is out of this read!")
         return False
 
     elif start < read.reference_start <= end:
@@ -179,8 +179,8 @@ def subEdit(read, start, end):
         if pair[1] > end:
             break
     if startPosIndex is None or endPosIndex is None:
-        print "Warning: A deletion existed of this read: %s at pos %s-%s, can't spike in sub" % (
-        read.query_name, startPosIndex, endPosIndex)
+        print("Warning: A deletion existed of this read: %s at pos %s-%s, can't spike in sub" % (
+        read.query_name, startPosIndex, endPosIndex))
         return False
     # print startPosIndex, endPosIndex
     return (startPosIndex, endPosIndex)

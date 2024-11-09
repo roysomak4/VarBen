@@ -8,7 +8,7 @@ ori = '208,-2,196,-2,14,208,-12,258,-2,240,208,4,518,460,36,-6,284,-4,16,496,6,2
 origFlowSignal = [ int(x) for x in ori.split(",")]
 from varben.common.methods import reCalculateFlowSignal
 signal, seq = reCalculateFlowSignal(sequence, origFlowSignal, flowOrder, libKey, barcode)
-print origFlowSignal, "!!", len(origFlowSignal)
-print signal, len(signal)
-print sequence, len(sequence)
-print seq, len(seq)
+print(origFlowSignal, "!!", len(origFlowSignal))
+print(signal, len(signal))
+print(sequence, len(sequence))
+print(seq, len(seq))

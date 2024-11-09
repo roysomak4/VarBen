@@ -6,7 +6,7 @@ import os
 
 
 def _call(cmd):
-    print cmd
+    print(cmd)
     flag = call(cmd, shell=True)
     if flag == 0:
         return True
@@ -23,18 +23,18 @@ def bamToFastq(bamFile, outPrefix, is_single):
         fq1 = outPrefix + ".fq"
         fq2 = None
         bamToFastq_cmd = "bedtools bamtofastq  -i %s -fq %s " % (bamFile, fq1)
-    print "bam to fastq start ..................................."
+    print("bam to fastq start ...................................")
     _call(bamToFastq_cmd)
-    print "bam to fastq end ....................................."
+    print("bam to fastq end .....................................")
     return fq1, fq2
 
 
 def bamToFastq_2(bamFile, outPrefix, is_single):
     fq1 = outPrefix + ".fq"
     bamToFastq_cmd = "bedtools bamtofastq  -i %s -fq %s " % (bamFile, fq1)
-    print "bam to fastq start ..................................."
+    print("bam to fastq start ...................................")
     _call(bamToFastq_cmd)
-    print "bam to fastq end ....................................."
+    print("bam to fastq end .....................................")
     return fq1
 
 
@@ -46,9 +46,9 @@ def map_bwa(ref_index, outSamFile, fq1, fq2=None, header=None, threadNum=1):
         mapping_cmd = "bwa mem %s -t %s %s %s >%s" % (RG_head, threadNum, ref_index, fq1, outSamFile)
     else:
         mapping_cmd = "bwa mem %s -t %s %s %s %s >%s" % (RG_head, threadNum, ref_index, fq1, fq2, outSamFile)
-    print "mapping by bwa start ...................................."
+    print("mapping by bwa start ....................................")
     _call(mapping_cmd)
-    print "mapping by bwa end ......................................"
+    print("mapping by bwa end ......................................")
 
 
 def map_novoalign(ref_index, out_sam, fq1, fq2=None, process=1):
@@ -58,9 +58,9 @@ def map_novoalign(ref_index, out_sam, fq1, fq2=None, process=1):
     else:
         # mapping_cmd = "/lustre/users/fangshuangsang/Project/simulation_mutation/softs/novocraft/novoalign -d %s -f %s %s --mCPU %s -o SAM > %s" % (ref_index, fq1, fq2, process, out_sam)
         mapping_cmd = "novoalign -d %s -f %s %s --mCPU %s -o SAM > %s" % (ref_index, fq1, fq2, process, out_sam)
-    print "mapping by novoalign start ...................................."
+    print("mapping by novoalign start ....................................")
     _call(mapping_cmd)
-    print "mapping by novoalign end ...................................."
+    print("mapping by novoalign end ....................................")
 
 
 def samToBam(inSamFile, outBamFile):
@@ -74,20 +74,20 @@ def bamSort(inBamFile, sortedBamFile_prefix, sort_key=None):
         bamSort_cmd = "samtools sort -o %s %s" % (sortedBamFile_prefix + ".bam", inBamFile)
     elif sort_key == "name":
         bamSort_cmd = "samtools sort -n -o %s %s" % (sortedBamFile_prefix + ".bam", inBamFile)
-    print "samtools sort start................................"
+    print("samtools sort start................................")
     _call(bamSort_cmd)
-    print "samtools sort end.................................."
+    print("samtools sort end..................................")
 
 
 def bamIndex(inBamFile):
     index_cmd = "samtools index %s" % (inBamFile)
-    print "samtools index start .............................."
+    print("samtools index start ..............................")
     _call(index_cmd)
-    print "samtools index end ................................"
+    print("samtools index end ................................")
 
 
 def remap(ref_index, inBamFile, outBamFile, aligner, is_single, header=None, sort=True, threadNum=1):
-    print "remap start ......................................."
+    print("remap start .......................................")
     aligner = aligner.lower()
     prefix = outBamFile.rstrip(".bam")
     if aligner in ("bwa", "novoalign"):
@@ -115,13 +115,13 @@ def remap(ref_index, inBamFile, outBamFile, aligner, is_single, header=None, sor
         remap_tmap(ref_index, inBamFile, outBamFile_tmp, threadNum)
         bamSort(outBamFile_tmp, prefix)
         bamIndex(outBamFile)
-    print "remap end .........................................."
+    print("remap end ..........................................")
     return outBamFile
 
 
 # discard
 def remap_2(ref_index, inBamFile, outBamFile, aligner, is_single, threadNum=1):
-    print "remap start ......................................."
+    print("remap start .......................................")
     if aligner == "bwa":
         prefix = outBamFile.rstrip(".bam")
         fastqPrefix = prefix + ".to"
@@ -132,7 +132,7 @@ def remap_2(ref_index, inBamFile, outBamFile, aligner, is_single, threadNum=1):
         samToBam(outSamFile, outBamFile_tmp)
         bamSort(outBamFile_tmp, prefix)
         bamIndex(outBamFile)
-    print "remap end .........................................."
+    print("remap end ..........................................")
     return outBamFile
 
 

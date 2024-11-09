@@ -28,7 +28,7 @@ def check_sv(sv_info, chrom_len):
             if end - start < min_size:
                 raise Exception("deletion is not in correct format")
         elif sv_type == "dup":
-            print sv_info[dup_num_id]
+            print(sv_info[dup_num_id])
             dup_num = int(sv_info[dup_num_id])
             if end - start < min_size or not dup_num >= 1:
                 raise Exception("duplication is not in correct format")
@@ -67,8 +67,8 @@ def check_sv(sv_info, chrom_len):
             sv.dup_num = int(sv_info[dup_num_id])
         return True, sv
     except Exception as e:
-        print traceback.format_exc()
-        print e.args
+        print(traceback.format_exc())
+        print(e.args)
         return False, e.args
 
 
@@ -87,7 +87,7 @@ def check_sv_file(sv_file, ref_file, invalid_log):
             if line == "":
                 break
             sv_info = line.split()
-            print sv_info
+            print(sv_info)
             flag, res = check_sv(sv_info, chrom_len)
             if not flag:
                 invalid_log.info(line, res[0])

@@ -217,8 +217,8 @@ def reCalculateSequence(origFlowSignal, flowOrder, libKey, barcode):
         i += 1
         pos += 1
 
-    print seq, len(libKey + barcode), len(libKey), len(barcode)
-    print seq[len(libKey + barcode):]
+    print(seq, len(libKey + barcode), len(libKey), len(barcode))
+    print(seq[len(libKey + barcode):])
 
 
 def deal_life_reads(read, flow_order, lib_key, barcode):
@@ -235,7 +235,7 @@ def deal_life_reads(read, flow_order, lib_key, barcode):
             orig_flow_signal = tag[1]
             break
     if not orig_flow_signal:
-        print "Please make sure that it is a life read, since there is no tag ZM"
+        print("Please make sure that it is a life read, since there is no tag ZM")
         return False
 
     flow_signal_str, final_seq = reCalculateFlowSignal(read.query_sequence, orig_flow_signal, flow_order,

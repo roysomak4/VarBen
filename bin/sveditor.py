@@ -39,11 +39,11 @@ def main(run_args):
         exit("no sv list to deal with")
 
     # step1: get insert size of paired reads
-    print "step1: get insert size of paired reads"
+    print("step1: get insert size of paired reads")
     insert_size = get_insertSize_range(run_args.bamfile, run_args.readlength, run_args.single)
 
     # step2: deal with sv and get total edited reads
-    print "step2: deal with sv and get total edited reads"
+    print("step2: deal with sv and get total edited reads")
     success_file = os.path.join(run_args.outdir, 'success_list.txt')
     total_modify_reads_file, total_delete_reads_file, total_add_reads_file, total_modify_list, total_delete_list, total_add_list = deal_sv(
         run_args.bamfile, run_args.reffasta, sv_list,
@@ -60,7 +60,7 @@ def main(run_args):
     invalid_log.close()
 
     # step3: get reads by region bed and write bam file
-    print "step3: get reads by region bed and write bam file"
+    print("step3: get reads by region bed and write bam file")
     chrom_list, used_bam_file_tmp, exclude_bam_file_tmp = get_reads_by_region(run_args.bamfile, sv_list,
                                                                               temp_out_dir)
 
@@ -71,7 +71,7 @@ def main(run_args):
                                                     int(run_args.process))
 
     # step4: merge edited reads and remap to new bam, consider about the tag, RG, life reads
-    print "step4: merge edited reads and remap to new bam, consider about the tag, RG, life reads"
+    print("step4: merge edited reads and remap to new bam, consider about the tag, RG, life reads")
     edit_remap_bam_file = merge_edit_bam(run_args.bamfile, temp_out_dir, run_args.single, total_modify_reads_file,
                                          total_add_reads_file, used_bam_file, total_modify_list, total_add_list,
                                          run_args.seqer, run_args.aligner, run_args.alignerIndex,
@@ -79,7 +79,7 @@ def main(run_args):
                                          run_args.libkey, run_args.barcode, run_args.tag)
 
     # step5: remapped edit reads and merge
-    print "step5: remapped edit reads and merge"
+    print("step5: remapped edit reads and merge")
     out_bam_file = os.path.join(run_args.outdir, "edit.sorted.bam")
     bamMerge([edit_remap_bam_file, exclude_bam_file], out_bam_file)
     bamIndex(out_bam_file)
@@ -87,8 +87,8 @@ def main(run_args):
     end_time = time.asctime(time.localtime(time.time()))
     # print end_time
     # speed_time = end_time - start_time
-    print "Edit Bam is completed! Result see %s and valid mutation see %s. Invalid mutation can't be spike in see %s." % (
-        out_bam_file, success_file, invalid_log_file)
+    print("Edit Bam is completed! Result see %s and valid mutation see %s. Invalid mutation can't be spike in see %s." % (
+        out_bam_file, success_file, invalid_log_file))
 
 
 def run():

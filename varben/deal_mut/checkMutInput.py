@@ -71,7 +71,7 @@ def check_polymorphism(bam, ref, mutinfo, maxsnpfrac):
             else:
                 snp_frac = 0
             if snp_frac > maxsnpfrac:
-                print snp_frac, maxsnpfrac
+                print(snp_frac, maxsnpfrac)
                 return False
     return True
 

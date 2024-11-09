@@ -11,8 +11,8 @@ def record_reads(bam_file, out_dir, label, reads_type1_left, reads_type1_right, 
                  reads_type3_left, reads_type3_right, reads_type4, reads_type5_left, reads_type5_right):
     loc = locals()
     # bam = pysam.AlignmentFile(bam_file, 'rb')
-    print label
-    for key, value in loc.items():
+    print(label)
+    for key, value in list(loc.items()):
         if key in ('bam_file', 'label', 'out_dir'):
             continue
         reads = value
@@ -75,7 +75,7 @@ def deal_sv(bam_file, ref_file, sv_list, is_single, minmapq, is_multmapfilter, m
             start_coverage_deal = start_coverage * freq
             end_coverage = count_coverage(bam, chrom, end, end)
             end_coverage_deal = end_coverage
-            print start_coverage, end_coverage, mindepth
+            print(start_coverage, end_coverage, mindepth)
             # exit()
             if start_coverage < mindepth or end_coverage < mindepth:
                 invalid_log.info(str(sv_info), "coverage too small")
@@ -261,7 +261,7 @@ def deal_duplication(bam, ref, svinfo, is_single, readLength, tempDir, insertSiz
         if type_reads_num == 0:
             return False, "All reads is filtered in this scope, total & filtered reads num %s" % filtered_read_num
         freq = freq * (type_reads_num * 2 + filtered_read_num) / (type_reads_num * 2)
-        print freq
+        print(freq)
         if freq > 1:
             freq = 1
         freq_dup = (dup_num - 1) * freq

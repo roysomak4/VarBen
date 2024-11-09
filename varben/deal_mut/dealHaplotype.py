@@ -25,23 +25,23 @@ def deal_haplotype(bam_file, haplotype, reffasta, haplotype_prefix, mindepth, mi
 
     # judge depth and mut reads whether qualified
     if depth < int(mindepth):
-        print "depth less than min depth!"
+        print("depth less than min depth!")
         return False, "haplotype in position %s:%s-%s: depth less than min depth(%s)" % (
             haplotype.chrom, haplotype.start, haplotype.end, mindepth)
     else:
         mut_reads_num = int(depth * haplotype.freq)
         if mut_reads_num < int(minmutreads):
-            print "mutation reads num less than minmutreads!"
+            print("mutation reads num less than minmutreads!")
             return False, "haplotype in position %s:%s-%s: mut reads less than min mut reads(%s)" % (
                 haplotype.chrom, haplotype.start, haplotype.end, minmutreads)
 
-    print "start pick reads"
+    print("start pick reads")
     # print str(haplotype)
     res = pick_reads(bam, reads_dict, mut_reads_num, is_single, minmapq, is_multmapfilter)
     if res[0] is False:
         return False, "haplotype in position %s:%s-%s: %s" % (haplotype.chrom, haplotype.start, haplotype.end, res[1])
     chosen_reads, mate_reads = res
-    print "end pick reads"
+    print("end pick reads")
     # edit
     my_chosen_reads = {}
     my_mate_reads = {}
@@ -50,11 +50,11 @@ def deal_haplotype(bam_file, haplotype, reffasta, haplotype_prefix, mindepth, mi
     chosen_reads_num = 0
 
     real_mut_reads_num = 0
-    for readName, readInfo in chosen_reads.items():
+    for readName, readInfo in list(chosen_reads.items()):
         my_chosen_reads[readName] = {}
         tmp_dict = {}
         tmp_dict2 = {}
-        for strand, read in readInfo.items():
+        for strand, read in list(readInfo.items()):
             my_read = Read(read)
             res = editRead(my_read, reffasta, haplotype.mutList)
             if res is False:
@@ -103,7 +103,7 @@ def deal_haplotype(bam_file, haplotype, reffasta, haplotype_prefix, mindepth, mi
 def pick_reads(bam, reads_dict, choose_num, is_single, minmapq, is_multmapfilter):
     total_reads_num = len(reads_dict)
     chosen_reads = {}
-    keys = reads_dict.keys()
+    keys = list(reads_dict.keys())
     chosen_reads_id = []
     try_reads_id = []
     mate_reads = {}
@@ -122,7 +122,7 @@ def pick_reads(bam, reads_dict, choose_num, is_single, minmapq, is_multmapfilter
             try_reads_id.append(choose_id)
 
             read_name = keys[choose_id]
-            strand_keys = reads_dict[read_name].keys()
+            strand_keys = list(reads_dict[read_name].keys())
             strand = strand_keys[0]
             read = reads_dict[read_name][strand]
             # print read.mapping_quality, len(read.query_sequence)
@@ -148,7 +148,7 @@ def pick_reads(bam, reads_dict, choose_num, is_single, minmapq, is_multmapfilter
 
             read_name = keys[choose_id]
 
-            strand_keys = reads_dict[read_name].keys()
+            strand_keys = list(reads_dict[read_name].keys())
             if len(reads_dict[read_name]) == 1:
                 read = reads_dict[read_name][strand_keys[0]]
                 if int(read.mapping_quality) < minmapq:
@@ -163,7 +163,7 @@ def pick_reads(bam, reads_dict, choose_num, is_single, minmapq, is_multmapfilter
                         if mate_read is not None:
                             mate_reads[read_name] = mate_read
                         else:
-                            print "no mate read found!"
+                            print("no mate read found!")
             if len(reads_dict[read_name]) == 2:
                 read1 = reads_dict[read_name][strand_keys[0]]
                 read2 = reads_dict[read_name][strand_keys[1]]

@@ -23,7 +23,7 @@ for read in bam.fetch(chrom, start, end + 1):
                 #if nul in 'ATCG':
                 #    numDict[pair[1]][nul] += 1
                 if nul in 'TCG' and pos < 10:
-                    print( "[POSITON: "+str(pos) +"]\t [BASE: "+ nul+ "]\t [READ: "+str(read)+"]\t READPOS: "+str(read.get_aligned_pairs())+"]\t READBASE:"+str(read.query_alignment_sequence[pos])+"]")
+                    print(( "[POSITON: "+str(pos) +"]\t [BASE: "+ nul+ "]\t [READ: "+str(read)+"]\t READPOS: "+str(read.get_aligned_pairs())+"]\t READBASE:"+str(read.query_alignment_sequence[pos])+"]"))
                     break
     if nul in 'TCG' and pos < 10:
         break

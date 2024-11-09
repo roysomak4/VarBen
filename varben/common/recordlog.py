@@ -7,7 +7,7 @@ class InvalidLog(object):
         self.log = open(log_file, 'w')
 
     def info(self, *args):
-        print args
+        print(args)
         args_str = ", ".join(args) + "\n"
         self.log.write(args_str)
 
