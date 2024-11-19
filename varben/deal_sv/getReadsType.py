@@ -1,5 +1,7 @@
 from multiprocessing.pool import Pool
+
 import pysam
+
 from varben.common.bamobject import Read
 from varben.common.methods import find_mate
 
@@ -7,7 +9,7 @@ from varben.common.methods import find_mate
 def read_bam_reads(bamFileList):
     total_reads_pair = []
     for bamfile in bamFileList:
-        bam = pysam.AlignmentFile(bamfile, 'rb')
+        bam = pysam.AlignmentFile(bamfile, "rb")
         read_left, read_right = None, None
         for read in bam.fetch():
             if read_left == None:
@@ -57,7 +59,9 @@ def getPosType_pair(read1, read2, start, end):
         else:
             if type_start == -2 and type_end == -1:
                 return "center", 0
-            elif (type_start == -1 and type_end == -1) or (type_start == -2 and type_end == -2):
+            elif (type_start == -1 and type_end == -1) or (
+                type_start == -2 and type_end == -2
+            ):
                 return "side", 0
 
 
@@ -92,8 +96,10 @@ def getPosType_single(read1, start, end):
                 raise Exception("Impossible!")
 
 
-def posType_sub_single(bamFile, chr, sub_start, sub_end, start, end, minmapq, is_multmapfilter):
-    bam = pysam.AlignmentFile(bamFile, 'rb')
+def posType_sub_single(
+    bamFile, chr, sub_start, sub_end, start, end, minmapq, is_multmapfilter
+):
+    bam = pysam.AlignmentFile(bamFile, "rb")
     reads = bam.fetch(chr, sub_start, sub_end)
 
     total_reads = []
@@ -128,34 +134,63 @@ def posType_sub_single(bamFile, chr, sub_start, sub_end, start, end, minmapq, is
     return reads_type6_left, reads_type6_right, reads_type7, filtered_reads_num
 
 
-def posType_sub_paired(bamFile, chr, sub_start, sub_end, start, end, readLength, minmapq, is_multmapfilter,
-                       extension=None):
-    bam = pysam.AlignmentFile(bamFile, 'rb')
+def posType_sub_paired(
+    bamFile,
+    chr,
+    sub_start,
+    sub_end,
+    start,
+    end,
+    readLength,
+    minmapq,
+    is_multmapfilter,
+    extension=None,
+):
+    bam = pysam.AlignmentFile(bamFile, "rb")
     print(sub_start, sub_end)
     reads = bam.fetch(chr, sub_start, sub_end)
 
     total_reads = []
     for read in reads:
         total_reads.append(read)
-    reads_type1_left = []  # 1. in left place of del and second read is on the breakpoint
-    reads_type1_right = []  # 1. in right place of del and first read is on the breakpoint
+    reads_type1_left = (
+        []
+    )  # 1. in left place of del and second read is on the breakpoint
+    reads_type1_right = (
+        []
+    )  # 1. in right place of del and first read is on the breakpoint
     reads_type2_left = []  # 2. in left place of del and first read is on the breakpoint
-    reads_type2_right = []  # 2. in right place of del and second read is on the breakpoint
-    reads_type3_left = []  # 3. left read and right read crossover start breakpoint with no intersection
-    reads_type3_right = []  # 3. left read and right read crossover end breakpoint with no intersection
+    reads_type2_right = (
+        []
+    )  # 2. in right place of del and second read is on the breakpoint
+    reads_type3_left = (
+        []
+    )  # 3. left read and right read crossover start breakpoint with no intersection
+    reads_type3_right = (
+        []
+    )  # 3. left read and right read crossover end breakpoint with no intersection
     reads_type4 = []  # 4. reads within the del
-    reads_type5_left = []  # 5. in left place of del and first read and right read are all has intersection
-    reads_type5_right = []  # 3. in right place of del and first read and right read are all has intersection
+    reads_type5_left = (
+        []
+    )  # 5. in left place of del and first read and right read are all has intersection
+    reads_type5_right = (
+        []
+    )  # 3. in right place of del and first read and right read are all has intersection
     filtered_reads_num = 0
     print("Sub reads num: ", len(total_reads))
     reverse_num = 0
     for read in total_reads:
         mate_read = find_mate(read, bam)
-        if not (mate_read and read.cigarstring == str(readLength) + "M" and mate_read.cigarstring == str(
-                readLength) + "M"
-                and read.flag in [163, 83, 99, 147] and mate_read.flag in [163, 83, 99, 147]) \
-                or (int(read.mapping_quality) < minmapq or int(
-                    mate_read.mapping_quality) < minmapq):  # check_reads_pair(read, mate_read))
+        if not (
+            mate_read
+            and read.cigarstring == str(readLength) + "M"
+            and mate_read.cigarstring == str(readLength) + "M"
+            and read.flag in [163, 83, 99, 147]
+            and mate_read.flag in [163, 83, 99, 147]
+        ) or (
+            int(read.mapping_quality) < minmapq
+            or int(mate_read.mapping_quality) < minmapq
+        ):  # check_reads_pair(read, mate_read))
             filtered_reads_num += 1
             continue
 
@@ -200,15 +235,45 @@ def posType_sub_paired(bamFile, chr, sub_start, sub_end, start, end, readLength,
             reads_type4.append([read_left, read_right])
     print("Reverse num: ", reverse_num)
     bam.close()
-    return reads_type1_left, reads_type1_right, reads_type2_left, reads_type2_right, reads_type3_left, reads_type3_right, reads_type4, reads_type5_left, reads_type5_right, filtered_reads_num
+    return (
+        reads_type1_left,
+        reads_type1_right,
+        reads_type2_left,
+        reads_type2_right,
+        reads_type3_left,
+        reads_type3_right,
+        reads_type4,
+        reads_type5_left,
+        reads_type5_right,
+        filtered_reads_num,
+    )
 
 
-def pos_type_classify(bamfile, chrom, start, end, is_single, read_length, temp_dir, extension=None, center=True,
-                      maxsize=None, process=20, minmapq=0, is_multmapfilter=False):
-    print(bamfile, chrom, start, end, is_single, read_length, temp_dir, extension, center)
+def pos_type_classify(
+    bamfile,
+    chrom,
+    start,
+    end,
+    is_single,
+    read_length,
+    temp_dir,
+    extension=None,
+    center=True,
+    maxsize=None,
+    process=20,
+    minmapq=0,
+    is_multmapfilter=False,
+):
+    print(
+        bamfile, chrom, start, end, is_single, read_length, temp_dir, extension, center
+    )
     if is_single:
-        total_reads_type6_left = []  # 6. in left place of del and second read is on the breakpoint
-        total_reads_type6_right = []  # 6. in right place of del and first read is on the breakpoint
+        total_reads_type6_left = (
+            []
+        )  # 6. in left place of del and second read is on the breakpoint
+        total_reads_type6_right = (
+            []
+        )  # 6. in right place of del and first read is on the breakpoint
         total_reads_type7 = []  # 7. reads within the del
         # temp_prefix = "%s/classify_%s" % (temp_dir, sub_num)
         if extension:
@@ -218,32 +283,53 @@ def pos_type_classify(bamfile, chrom, start, end, is_single, read_length, temp_d
             rel_start = start
             rel_end = end
         if center:
-            reads_type6_left, reads_type6_right, reads_type7, filtered_reads_num = posType_sub_single(bamfile, chrom,
-                                                                                                      rel_start,
-                                                                                                      rel_end, start,
-                                                                                                      end, minmapq,
-                                                                                                      is_multmapfilter)
+            reads_type6_left, reads_type6_right, reads_type7, filtered_reads_num = (
+                posType_sub_single(
+                    bamfile,
+                    chrom,
+                    rel_start,
+                    rel_end,
+                    start,
+                    end,
+                    minmapq,
+                    is_multmapfilter,
+                )
+            )
         else:
             rel_start_left = rel_start
             rel_end_left = start + maxsize
             rel_start_right = end - maxsize
             rel_end_right = rel_end
-            reads_type6_left_1, reads_type6_right_1, reads_type7_1, filtered_reads_num_1 = posType_sub_single(bamfile,
-                                                                                                              chrom,
-                                                                                                              rel_start_left,
-                                                                                                              rel_end_left,
-                                                                                                              start,
-                                                                                                              end,
-                                                                                                              minmapq,
-                                                                                                              is_multmapfilter)
-            reads_type6_left_2, reads_type6_right_2, reads_type7_2, filtered_reads_num_2 = posType_sub_single(bamfile,
-                                                                                                              chrom,
-                                                                                                              rel_start_right,
-                                                                                                              rel_end_right,
-                                                                                                              start,
-                                                                                                              end,
-                                                                                                              minmapq,
-                                                                                                              is_multmapfilter)
+            (
+                reads_type6_left_1,
+                reads_type6_right_1,
+                reads_type7_1,
+                filtered_reads_num_1,
+            ) = posType_sub_single(
+                bamfile,
+                chrom,
+                rel_start_left,
+                rel_end_left,
+                start,
+                end,
+                minmapq,
+                is_multmapfilter,
+            )
+            (
+                reads_type6_left_2,
+                reads_type6_right_2,
+                reads_type7_2,
+                filtered_reads_num_2,
+            ) = posType_sub_single(
+                bamfile,
+                chrom,
+                rel_start_right,
+                rel_end_right,
+                start,
+                end,
+                minmapq,
+                is_multmapfilter,
+            )
             reads_type6_left = reads_type6_left_1 + reads_type6_right_1
             reads_type6_right = reads_type6_right_1 + reads_type6_right_2
             reads_type7 = reads_type7_1 + reads_type7_2
@@ -253,22 +339,48 @@ def pos_type_classify(bamfile, chrom, start, end, is_single, read_length, temp_d
         total_reads_type6_right.extend(reads_type6_right)
         total_reads_type7.extend(reads_type7)
         total_filtered_reads = filtered_reads_num
-        print(total_reads_type6_left, total_reads_type6_right, total_reads_type7, total_filtered_reads)
-        return total_reads_type6_left, total_reads_type6_right, total_reads_type7, total_filtered_reads
+        print(
+            total_reads_type6_left,
+            total_reads_type6_right,
+            total_reads_type7,
+            total_filtered_reads,
+        )
+        return (
+            total_reads_type6_left,
+            total_reads_type6_right,
+            total_reads_type7,
+            total_filtered_reads,
+        )
     else:
-        total_reads_type1_left = []  # 1. in left place of del and second read is on the breakpoint
-        total_reads_type1_right = []  # 1. in right place of del and first read is on the breakpoint
-        total_reads_type2_left = []  # 2. in left place of del and first read is on the breakpoint
-        total_reads_type2_right = []  # 2. in right place of del and second read is on the breakpoint
-        total_reads_type3_left = []  # 3. in left place of del and first read and right read is crossover breakpoint with no intersection
-        total_reads_type3_right = []  # 3. in right place of del and first read and right read is crossover breakpoint with no intersection
+        total_reads_type1_left = (
+            []
+        )  # 1. in left place of del and second read is on the breakpoint
+        total_reads_type1_right = (
+            []
+        )  # 1. in right place of del and first read is on the breakpoint
+        total_reads_type2_left = (
+            []
+        )  # 2. in left place of del and first read is on the breakpoint
+        total_reads_type2_right = (
+            []
+        )  # 2. in right place of del and second read is on the breakpoint
+        total_reads_type3_left = (
+            []
+        )  # 3. in left place of del and first read and right read is crossover breakpoint with no intersection
+        total_reads_type3_right = (
+            []
+        )  # 3. in right place of del and first read and right read is crossover breakpoint with no intersection
         total_reads_type4 = []  # 4. reads within the del
-        total_reads_type5_left = []  # 5. in left place of del and first read and right read are all has intersection
-        total_reads_type5_right = []  # 3. in right place of del and first read and right read are all has intersection
+        total_reads_type5_left = (
+            []
+        )  # 5. in left place of del and first read and right read are all has intersection
+        total_reads_type5_right = (
+            []
+        )  # 3. in right place of del and first read and right read are all has intersection
         total_filtered_reads = 0
 
         length = end - start + 1
-        sub_num = length / read_length
+        sub_num = int(length / read_length)
 
         # when start = end, translocation of chromosome
         if start == end:
@@ -276,10 +388,29 @@ def pos_type_classify(bamfile, chrom, start, end, is_single, read_length, temp_d
             rel_end = end + maxsize
             print(rel_start, rel_end)
             # temp_prefix = "%s/classify_%s" % (temp_dir, "whole")
-            (reads_type1_left, reads_type1_right, reads_type2_left, reads_type2_right, reads_type3_left,
-             reads_type3_right, reads_type4, reads_type5_left, reads_type5_right, filtered_reads_num) \
-                = posType_sub_paired(bamfile, chrom, rel_start, rel_end, start, end, read_length, minmapq,
-                                     is_multmapfilter, extension=extension)
+            (
+                reads_type1_left,
+                reads_type1_right,
+                reads_type2_left,
+                reads_type2_right,
+                reads_type3_left,
+                reads_type3_right,
+                reads_type4,
+                reads_type5_left,
+                reads_type5_right,
+                filtered_reads_num,
+            ) = posType_sub_paired(
+                bamfile,
+                chrom,
+                rel_start,
+                rel_end,
+                start,
+                end,
+                read_length,
+                minmapq,
+                is_multmapfilter,
+                extension=extension,
+            )
             total_reads_type1_left.extend(reads_type1_left)
             total_reads_type1_right.extend(reads_type1_right)
             total_reads_type2_left.extend(reads_type2_left)
@@ -294,10 +425,29 @@ def pos_type_classify(bamfile, chrom, start, end, is_single, read_length, temp_d
         # end - start < read_length and there is no need to extend its scope
         elif sub_num == 0 and not extension:
             # temp_prefix = "%s/classify_%s" % (temp_dir, sub_num)
-            (reads_type1_left, reads_type1_right, reads_type2_left, reads_type2_right, reads_type3_left,
-             reads_type3_right, reads_type4, reads_type5_left, reads_type5_right, filtered_reads_num) \
-                = posType_sub_paired(bamfile, chrom, start, end, start, end, read_length, minmapq, is_multmapfilter,
-                                     extension=extension)
+            (
+                reads_type1_left,
+                reads_type1_right,
+                reads_type2_left,
+                reads_type2_right,
+                reads_type3_left,
+                reads_type3_right,
+                reads_type4,
+                reads_type5_left,
+                reads_type5_right,
+                filtered_reads_num,
+            ) = posType_sub_paired(
+                bamfile,
+                chrom,
+                start,
+                end,
+                start,
+                end,
+                read_length,
+                minmapq,
+                is_multmapfilter,
+                extension=extension,
+            )
             total_reads_type1_left.extend(reads_type1_left)
             total_reads_type1_right.extend(reads_type1_right)
             total_reads_type2_left.extend(reads_type2_left)
@@ -318,12 +468,13 @@ def pos_type_classify(bamfile, chrom, start, end, is_single, read_length, temp_d
                 rel_start = start - extension
                 rel_end = end + extension
                 length = rel_end - rel_start + 1
-                sub_num = length / read_length
+                sub_num = int(length / read_length)
             else:
                 rel_start = start
                 rel_end = end
             # if center should be consider or center is no need to consider, but the center size is too less
             if center or (not center and maxsize is not None and length < maxsize * 2):
+                print(sub_num)
                 for i in range(sub_num):
                     sub_start = i * read_length + rel_start
                     if i == sub_num - 1:
@@ -332,9 +483,21 @@ def pos_type_classify(bamfile, chrom, start, end, is_single, read_length, temp_d
                         sub_end = sub_start + 1
                     print("Sub Process: %s" % i, sub_start, sub_end)
                     result_list.append(
-                        run_pool.apply_async(posType_sub_paired, args=(
-                            bamfile, chrom, sub_start, sub_end, start, end, read_length, minmapq, is_multmapfilter,
-                            extension))
+                        run_pool.apply_async(
+                            posType_sub_paired,
+                            args=(
+                                bamfile,
+                                chrom,
+                                sub_start,
+                                sub_end,
+                                start,
+                                end,
+                                read_length,
+                                minmapq,
+                                is_multmapfilter,
+                                extension,
+                            ),
+                        )
                     )
                 run_pool.close()
                 run_pool.join()
@@ -356,9 +519,21 @@ def pos_type_classify(bamfile, chrom, start, end, is_single, read_length, temp_d
                     print("Sub Process: %s" % i, sub_start, sub_end)
                     # temp_prefix = "%s/classify_%s" % (temp_dir, i)
                     result_list.append(
-                        run_pool.apply_async(posType_sub_paired, args=(
-                            bamfile, chrom, sub_start, sub_end, start, end, read_length, minmapq, is_multmapfilter,
-                            extension))
+                        run_pool.apply_async(
+                            posType_sub_paired,
+                            args=(
+                                bamfile,
+                                chrom,
+                                sub_start,
+                                sub_end,
+                                start,
+                                end,
+                                read_length,
+                                minmapq,
+                                is_multmapfilter,
+                                extension,
+                            ),
+                        )
                     )
                 length = rel_end_right - rel_start_right + 1
                 sub_num = length / read_length
@@ -371,15 +546,38 @@ def pos_type_classify(bamfile, chrom, start, end, is_single, read_length, temp_d
                     print("Sub Process: %s" % i, sub_start, sub_end)
                     # temp_prefix = "%s/classify_%s" % (temp_dir, i)
                     result_list.append(
-                        run_pool.apply_async(posType_sub_paired, args=(
-                            bamfile, chrom, sub_start, sub_end, start, end, read_length, minmapq, is_multmapfilter,
-                            extension))
+                        run_pool.apply_async(
+                            posType_sub_paired,
+                            args=(
+                                bamfile,
+                                chrom,
+                                sub_start,
+                                sub_end,
+                                start,
+                                end,
+                                read_length,
+                                minmapq,
+                                is_multmapfilter,
+                                extension,
+                            ),
+                        )
                     )
                 run_pool.close()
                 run_pool.join()
 
             for res in result_list:
-                reads_type1_left, reads_type1_right, reads_type2_left, reads_type2_right, reads_type3_left, reads_type3_right, reads_type4, reads_type5_left, reads_type5_right, filtered_reads_num = res.get()
+                (
+                    reads_type1_left,
+                    reads_type1_right,
+                    reads_type2_left,
+                    reads_type2_right,
+                    reads_type3_left,
+                    reads_type3_right,
+                    reads_type4,
+                    reads_type5_left,
+                    reads_type5_right,
+                    filtered_reads_num,
+                ) = res.get()
                 total_reads_type1_left.extend(reads_type1_left)
                 total_reads_type1_right.extend(reads_type1_right)
                 total_reads_type2_left.extend(reads_type2_left)
@@ -391,10 +589,31 @@ def pos_type_classify(bamfile, chrom, start, end, is_single, read_length, temp_d
                 total_reads_type5_right.extend(reads_type5_right)
                 total_filtered_reads += filtered_reads_num
 
-        print("type1_left: %s; type1_right: %s, type2_left: %s; type2_right: %s, type3_left: %s; " \
-              "type3_right: %s, type4: %s; type5_left: %s; type5_right: %s" % (
-                  len(total_reads_type1_left), len(total_reads_type1_right), len(total_reads_type2_left),
-                  len(total_reads_type2_right), len(total_reads_type3_left), len(total_reads_type3_right),
-                  len(total_reads_type4), len(total_reads_type5_left), len(total_reads_type5_right)))
+        print(
+            "type1_left: %s; type1_right: %s, type2_left: %s; type2_right: %s, type3_left: %s; "
+            "type3_right: %s, type4: %s; type5_left: %s; type5_right: %s"
+            % (
+                len(total_reads_type1_left),
+                len(total_reads_type1_right),
+                len(total_reads_type2_left),
+                len(total_reads_type2_right),
+                len(total_reads_type3_left),
+                len(total_reads_type3_right),
+                len(total_reads_type4),
+                len(total_reads_type5_left),
+                len(total_reads_type5_right),
+            )
+        )
         print("total_filtered_reads: %s" % total_filtered_reads)
-        return total_reads_type1_left, total_reads_type1_right, total_reads_type2_left, total_reads_type2_right, total_reads_type3_left, total_reads_type3_right, total_reads_type4, total_reads_type5_left, total_reads_type5_right, total_filtered_reads
+        return (
+            total_reads_type1_left,
+            total_reads_type1_right,
+            total_reads_type2_left,
+            total_reads_type2_right,
+            total_reads_type3_left,
+            total_reads_type3_right,
+            total_reads_type4,
+            total_reads_type5_left,
+            total_reads_type5_right,
+            total_filtered_reads,
+        )
